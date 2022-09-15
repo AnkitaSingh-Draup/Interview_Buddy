@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from hackathon.views import get_job_skill_role
+from hackathon.views import *
 
 router = DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('get_job_skill_role/', get_job_skill_role),
+    path('get_candidate_profile/', get_candidate_profile),
 ]
