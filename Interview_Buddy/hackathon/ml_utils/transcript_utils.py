@@ -1,8 +1,7 @@
 import nltk
-nltk.download('nps_chat')
-nltk.download('punkt')
 
 import re
+
 
 def get_questions(text, threshold = 0.75):
     sent_text = nltk.sent_tokenize(text)
