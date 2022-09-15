@@ -6,7 +6,6 @@ from django.db import models
 class Job(models.Model):
     job_id = models.ImageField(null=False, blank=False, unique=True)
     job_type = models.TextField(null=False, blank=False)
-    skills = models.TextField()
     location = models.TextField()
     description = models.TextField()
     title = models.TextField(null=False, blank=False)
