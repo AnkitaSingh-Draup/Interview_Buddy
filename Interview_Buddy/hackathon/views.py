@@ -58,8 +58,12 @@ def get_candidate_interview_details(request):
                     question_rating = QuestionLevelRating.objects.filter(interview_id=row.id)
                     if question_rating:
                         for question_row in question_rating:
-                            response['result'][level] = {'question': question_row.question.question,
-                                                         'score': question_row.rating.values}
+                            if response['result'].get(level):
+                                response['result'][level].append({'question': question_row.question.question,
+                                                                  'score': question_row.rating.id})
+                            else:
+                                response['result'][level] = [{'question': question_row.question.question,
+                                                              'score': question_row.rating.id}]
 
     except Exception as e:
         response['errors'] = e
@@ -74,9 +78,9 @@ def get_transcript_questions(request):
     try:
         if request.method == 'POST':
             data = json.loads(request.body)
-            transcript_text = data.get('transcript_text')
+            obj = Transcript.objects.filter(id=1).first()
             interviewer_name = data.get('interviewer_name')
-            questions_list, interviewer_text, candidate_text = process_transcript(transcript_text, interviewer_name)
+            questions_list, interviewer_text, candidate_text = process_transcript(obj.vtt_file, interviewer_name)
             grammar_rating = get_grammar_rating(candidate_text)
             interviewer_sentiment_score = sentiment_scores(interviewer_text)
             candidate_sentiment_score = sentiment_scores(candidate_text)
@@ -107,28 +111,23 @@ def save_questions(request):
             interviewer_sentiment = data.get('interviewer_sentiment')
             candidate_sentiment = data.get('candidate_sentiment')
 
-            transcript_obj = Transcript.objects.create(vtt_file=transcript_text)
-            transcript_obj.save()
+            transcript_obj = Transcript.objects.get_or_create(vtt_file=transcript_text)[0]
 
             interviewer_obj = Interviewer.objects.filter(email=email).first()
-            interview_obj = Interview.objects.create(
+            interview_obj = Interview.objects.get_or_create(
                 candidate_id=candidate_id, job_id=job_id, level_id=level_id, interviewer=interviewer_obj,
                 grammar_rating=grammar_rating, interviewer_sentiment=interviewer_sentiment, transcript=transcript_obj,
                 candidate_sentiment=candidate_sentiment
-            )
-            interview_obj.save()
+            )[0]
 
             questions_list = data.get('questions_list')
             for question_score in questions_list:
                 question = question_score.get('question')
                 score = question_score.get('score')
-                obj = Question.objects.create(question=question)
-                obj.save()
-                rating_obj = Rating.objects.create(values=score)
-                rating_obj.save()
-                question_level_rating = QuestionLevelRating.objects.create(
+                obj = Question.objects.get_or_create(question=question)[0]
+                rating_obj = Rating.objects.get_or_create(values=score)[0]
+                question_level_rating = QuestionLevelRating.objects.get_or_create(
                     question=obj, rating=rating_obj, interview=interview_obj)
-                question_level_rating.save()
 
     except Exception as e:
         response['errors'] = e
@@ -151,4 +150,21 @@ def get_roadmap_data(request):
         response['errors'] = e
         response['status'] = 'fail'
     return Response(response)
+
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def get_suggestion(request):
+    response = {'status': 'success', 'result': {}, 'errors': []}
+    try:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            keyword = data.get('keyword')
+            data = search_suggestions(keyword)
+            response['result'] = data
+    except Exception as e:
+        response['errors'] = e
+        response['status'] = 'fail'
+    return Response(response)
+
 

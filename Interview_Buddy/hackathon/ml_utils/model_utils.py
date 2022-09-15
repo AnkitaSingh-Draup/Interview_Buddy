@@ -1,6 +1,7 @@
 import torch
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+from hackathon.models import Question
 device = "cpu"
 model_id = "gpt2"
 grammar_model = GPT2LMHeadModel.from_pretrained(model_id).to(device)
@@ -41,7 +42,16 @@ def get_grammar_rating(sentence):
 def sentiment_scores(sentence):
     sentiment_dict = sid_obj.polarity_scores(sentence)
     neg, new, pos = sentiment_dict['neg']*100, sentiment_dict['neu']*100, sentiment_dict['pos']*100
-    if sentiment_dict['compound'] <= -0.05 :
+    if sentiment_dict['compound'] <= -0.05:
         return 0
     else:
         return 1
+
+
+def search_suggestions(keyword):
+    sentences = list(Question.objects.filter().values_list('question', flat=True))
+    suggestions = []
+    for sent in sentences:
+        if keyword.lower() in sent.lower():
+            suggestions.append(sent)
+    return suggestions

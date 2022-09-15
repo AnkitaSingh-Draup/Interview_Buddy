@@ -2,8 +2,8 @@ import nltk
 import re
 import pickle
 
-model_filename = 'hackathon/ml_utils/model/query_classifier.pickle'
-vec_filename = 'hackathon/ml_utils/model/query_vectorizer.pickle'
+model_filename = 'hackathon/ml_utils/model/query_classifier_v4.pickle'
+vec_filename = 'hackathon/ml_utils/model/query_vectorizer_v4.pickle'
 
 gb = pickle.load(open(model_filename, 'rb'))
 vectorizer = pickle.load(open(vec_filename, 'rb'))
@@ -28,20 +28,18 @@ def get_questions(text, threshold=0.75):
         questions.remove('')
     return questions
 
-regex_all = r"""
+
+def process_transcript(transcript_text, interviewer_name):
+    regex_all = r"""
 (^[0-9]{2}[:][0-9]{2}[:][0-9]{2}[.,][0-9]{3})
 [ ]-->[ ]
 ([0-9]{2}[:][0-9]{2}[:][0-9]{2}[.,][0-9]{3})
-(?:\n<v\s)(.*?)(?:>)(.*?)(?:</v>)(?:\n\n|\Z)
-   """
+(?:\n<v\s)(.*?)(?:>)(.*?)(?:</v>)(?:\n\n|\Z)"""
 
-regex_time = r"(^[0-9]{2})[:]([0-9]{2})[:]([0-9]{2})"
+    with open('hackathon/ml_utils/1.vtt') as f:
+        transcript_text = f.read()
 
-
-def process_transcript(text, interviewer_name):
-
-    interviewer_name = "Shubhodeep Bhowmick"
-    matches = re.finditer(regex_all, text, re.VERBOSE | re.DOTALL | re.MULTILINE)
+    matches = re.finditer(regex_all, transcript_text, re.VERBOSE | re.DOTALL | re.MULTILINE)
 
     conversation = []
     continual_conv = ''
@@ -50,7 +48,7 @@ def process_transcript(text, interviewer_name):
     questions_list = list()
 
     for matchNum, match in enumerate(matches, start=1):
-        start, end, name, text = [match.group(group_num) for group_num in range(1,5)]
+        start, end, name, text = [match.group(group_num) for group_num in range(1, 5)]
         if matchNum == 1:
             previous_name = name
 

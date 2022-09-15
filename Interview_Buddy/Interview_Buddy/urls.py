@@ -27,6 +27,7 @@ urlpatterns = [
     path('get_candidate_interview_details/', get_candidate_interview_details),
     path('get_transcript_questions/', get_transcript_questions),
     path('save_questions/', save_questions),
-    path('get_roadmap_data/', get_roadmap_data)
+    path('get_roadmap_data/', get_roadmap_data),
+    path('get_suggestion/', get_suggestion)
 
 ]

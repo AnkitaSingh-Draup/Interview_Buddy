@@ -1,0 +1,379 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:30.790
+<v Shubhodeep Bhowmick>So what has happened? You know, in many of the aspects like images or uh, RNP, we have many predefined or pre trained models which performed in general that is a good starting point and we have a lot of unstructured data that we have gathered in the last one day there previously or if you see most of the systems we were focusing on like SQLite and the No SQL like databases but given the fact that we have now had too much of.</v>
+
+00:00:00.180 --> 00:00:00.520
+<v Dolly Dhari Singh>Share.</v>
+
+00:00:30.900 --> 00:01:02.110
+<v Shubhodeep Bhowmick>Structural data. We need one of the ways of finding, searching, updating and so on and so forth. Also, to represent this unstructured data we have good enough pre trained models right now. So vector databases come into picture when we can have a representation of any of our object like let's say job description. So we can have an embedding created for the job description and once we have it for the XR 300,000,000 combos. So these are the embeddings that we will be creating.</v>
+
+00:01:02.290 --> 00:01:32.980
+<v Shubhodeep Bhowmick>How do we navigate through these 300,000,000 embeddings? Because this is going to be a huge space and the kind of operations that we would want to do are not like traditional operations where we, you know, filter by location equal to equal to Mumbai when we are thinking about a vector database or when we want to search for update and create embeddings and so on. At that time the kind of operations that we do are quite different than what we do on a SQL data. So how can we scale it, optimize it because when I.</v>
+
+00:01:33.110 --> 00:01:58.990
+<v Shubhodeep Bhowmick>You come to the scale of these embeddings, so imagine we are having about 300,000,000 JD and every JD is represented by the chat 1000 dimensional embedding. So this memory footprint of that entire system would go about 500GB. Also the minimal one. This is the to read a minimal one if we store it in I think we calculate it it it also in like 4 bytes.</v>
+
+00:02:00.380 --> 00:02:10.770
+<v Shubhodeep Bhowmick>Yeah, yeah. Force float 16. Float 16. If we store all our for our floats in that float 16, then we will have about 500GB of storage.</v>
+
+00:02:11.450 --> 00:02:41.610
+<v Shubhodeep Bhowmick>So the question is like to do any kind of operation such as find similarities. How can I do it in the most optimal way? Because of course I can't go through the entire 300,000,000 and then give a similar result. So how can I optimize my overall source and how can I so that is the main topic that we discussed? The reason for having this topic is that this is 1 space that most of the Internet companies are using for similarity source.</v>
+
+00:02:41.770 --> 00:02:58.700
+<v Shubhodeep Bhowmick>Commendation and I'm already detection and so on and so forth and we are using it in profile recommendation also. So this will give all of us a hint on where this particular domain is doing and how can we perhaps make use of it in our overall drop system.</v>
+
+00:02:59.500 --> 00:03:00.300
+<v Shubhodeep Bhowmick>Ohh.</v>
+
+00:03:01.180 --> 00:03:31.910
+<v Shubhodeep Bhowmick>Now, uh, with respect to search, we discussed about different indexing strategies, so there is always a tradeoff between quality, speed and memory. So we would want like let's say 100% quality that we want the out of 300,000,000, the best, the closest JD's that are there. Then we want very good quality. Then we'll have to compromise on the speed because in that case we'll literally have to perform an exhaustive search and go through all the embeddings at that that we have. And then that might take away.</v>
+
+00:03:32.130 --> 00:03:48.240
+<v Shubhodeep Bhowmick>But if we are OK with suboptimal results and many times we are OK with it, then there is a good old enough tradeoff that we would want to do about the source quality and the source feed. And how do we do that trade off was the topic and there are bunch of methods of optimizing this search.</v>
+
+00:03:48.680 --> 00:04:05.470
+<v Shubhodeep Bhowmick>Ohh that is where the indexing comes into picture. So we discuss something like a very simple Euclidean distance which is L2. We discuss something like you know product which takes into account the cosine similarity between the two vectors we spoke about.</v>
+
+00:04:06.890 --> 00:04:15.940
+<v Shubhodeep Bhowmick>Uh, we spoke about it, I said Ohh Shubhodeep spoke about and I said and we have something else idea, so I'll just give you a very.</v>
+
+00:04:16.000 --> 00:04:16.480
+<v Shubhodeep Bhowmick>Ohh.</v>
+
+00:04:17.370 --> 00:04:18.760
+<v Shubhodeep Bhowmick>Ohh brief about Ivy.</v>
+
+00:04:19.880 --> 00:04:21.970
+<v Shubhodeep Bhowmick>To uh with me till now.</v>
+
+00:04:24.430 --> 00:04:24.660
+<v Shubhodeep Bhowmick>OK.</v>
+
+00:04:24.660 --> 00:04:25.060
+<v Dolly Dhari Singh>Yeah.</v>
+
+00:04:26.440 --> 00:04:30.890
+<v Shubhodeep Bhowmick>Welcome. So I VS basically so this is all vector space.</v>
+
+00:04:31.900 --> 00:05:03.590
+<v Shubhodeep Bhowmick>Then instead of sorting two throughout the space, so we have usually a query vector that this is the JD that I want to find more similar JD's with respect to right and these are all of our embedded is that is 300,000,000 and you get an input from the client and this is our query point. I want to find those similar J and this is basically the embedding for each one of them so IDK what it does is it creates partitions in our so space and each partition is then represented by a center.</v>
+
+00:05:04.400 --> 00:05:30.420
+<v Shubhodeep Bhowmick>All right, these partitions are let's say created ohh randomly. There are other methods also results upon to create these permissions optimally, but let's just say that we create these random partitions and every partition is represented by a central. So instead of suppose this is my query point and instead of searching through the entire space what we do is we calculate the distance between the query point and each of the send notes.</v>
+
+00:05:31.260 --> 00:06:01.030
+<v Shubhodeep Bhowmick>Right, and the closest centroid is the cell that we try to search in the. So here is a pretty good visualization for that. So this is the cell of centroid, resource closes and we will be mainly focusing on this sale of vectors to find the more closest vectors to the query mode. There is something known as edge problem that we discussed regarding this optimization that if a query point is somewhere near the edge of a.</v>
+
+00:06:01.160 --> 00:06:30.560
+<v Shubhodeep Bhowmick>Popular cell fuel, for example. Then if you are, if I was supposed to find top ten closest vectors to this one. In that case it will be like 1234567. If I am using this particular set only. So with respect to Edge, if I'm constraining my source space into this set, then there is a problem for all the vectors that are at the edge. So there is a parameter that we can tweak which is known as impro with which what we do is instead of searching only in one.</v>
+
+00:06:31.180 --> 00:06:52.880
+<v Shubhodeep Bhowmick>Was this still researching in number of sets so as shown in the video, we can source for four cents, four closest sets, and that includes our recall quite a bit, but as we can expect that speeds down the things a bit if we are just searching in one cell then those speed is quite optimal if we are searching in like end number of cells then on the speed.</v>
+
+00:06:53.580 --> 00:07:24.300
+<v Shubhodeep Bhowmick>As something that we compromised. So that is one of the simplest algorithms that we go ahead with, which is known as IVF for sorting or optimally searching in the vector spaces we discussed. Yeah. And we discussed Ms this is another search algorithm to have better results for ohh sorry better source type and today we'll go through perhaps product quantization. We'll go for one Composite Index which makes use of inverted file index.</v>
+
+00:07:24.380 --> 00:07:31.710
+<v Shubhodeep Bhowmick>Antara quantization will go through and SW will go through an overall summary of phase indexes.</v>
+
+00:07:32.590 --> 00:07:41.300
+<v Shubhodeep Bhowmick>Ohh means now as if we were going in the very details of how every algorithm is implemented right idea PQ.</v>
+
+00:07:41.640 --> 00:08:11.470
+<v Shubhodeep Bhowmick>It's now we take a step back and think about what our algorithms, the phase library has implemented. Then we take another step back and think about what all categories of sorts are. Governments are present with respect to vector databases and then we take another step back and we think about the broader category or with respect to how are all of these algorithms implemented in our database system where we have all the other operations like read, write, update, delete and we need to be able to replicate to ensure.</v>
+
+00:08:11.620 --> 00:08:18.360
+<v Shubhodeep Bhowmick>Celebrity of data or how would we implement the entire data pipeline with respect to vector source and so on?</v>
+
+00:08:19.460 --> 00:08:20.110
+<v Shubhodeep Bhowmick>With me.</v>
+
+00:08:21.370 --> 00:08:21.990
+<v Shubhodeep Bhowmick>Yes.</v>
+
+00:08:22.930 --> 00:08:24.070
+<v Shubhodeep Bhowmick>There is not. You're getting.</v>
+
+00:08:23.560 --> 00:08:23.880
+<v Dolly Dhari Singh>Yeah.</v>
+
+00:08:25.490 --> 00:08:30.520
+<v Shubhodeep Bhowmick>He is working on the thing, he said. I'll come, but if they are, he's facing some code issues.</v>
+
+00:08:31.340 --> 00:08:31.810
+<v Shubhodeep Bhowmick>Number.</v>
+
+00:08:33.340 --> 00:08:34.040
+<v Shubhodeep Bhowmick>Umm.</v>
+
+00:08:34.710 --> 00:08:35.050
+<v Shubhodeep Bhowmick>OK.</v>
+
+00:08:36.930 --> 00:08:38.460
+<v Shubhodeep Bhowmick>Nobody any doubts?</v>
+
+00:08:40.040 --> 00:08:41.090
+<v Dolly Dhari Singh>No, nothing has happened.</v>
+
+00:08:50.300 --> 00:08:53.340
+<v Shubhodeep Bhowmick>Jarvis start already making it. Should we thinking?</v>
+
+00:08:54.050 --> 00:08:55.200
+<v Shubhodeep Bhowmick>Things being ordered thing.</v>
+
+00:08:55.560 --> 00:09:07.840
+<v Shubhodeep Bhowmick>So alright, so product quantization, there are different types of quantization of there is something known as scalar computerization. There is something as product quantization and.</v>
+
+00:09:08.830 --> 00:09:19.920
+<v Shubhodeep Bhowmick>I'm covering you one because there are many resources available which is very easy to understand for that, and the second was because of it performs quite well when it comes to compression the memory.</v>
+
+00:09:20.220 --> 00:09:31.130
+<v Shubhodeep Bhowmick>Support trend of the vectors after using product quantization is quite though and it gives us a good tradeoff between the recall and memory and the source.</v>
+
+00:09:31.780 --> 00:09:37.140
+<v Shubhodeep Bhowmick>Ohh without Much Ado I'll just talk about what product quantization actually does.</v>
+
+00:09:38.520 --> 00:09:54.200
+<v Shubhodeep Bhowmick>So the problem statement is quite simple that we have many many embeddings or vector spaces, and we want to be able to search in that very fast. One of the problems with many vectors is that they take a lot of space.</v>
+
+00:09:54.820 --> 00:10:24.550
+<v Shubhodeep Bhowmick>Ohh so if we as we discussed uh for about 300,000,000 vectors. Ohh that is really is we would require about 500 G Now how can I bring it down to let's say 20 decreasing it by 90%. That is something that product quantization can do with ensuring like 50% recall. Also now there has been a lot of research in this area as in what are some of those hyperparameter parameters to choose work better performance of work product quantization.</v>
+
+00:10:24.820 --> 00:10:44.010
+<v Shubhodeep Bhowmick>But again, this is something that will have to experiment with. I'll just go through the algorithm once, and if you have any questions then 10. So first of all, this is our vector. Ohh one of the vectors. I'll just tell you about the operation on one vector and this is something that we carry out with respect to all the vectors in the source space.</v>
+
+00:10:44.790 --> 00:10:48.120
+<v Shubhodeep Bhowmick>Ohh, the dimensionality of vector, let's say is 128.</v>
+
+00:10:49.100 --> 00:11:01.240
+<v Shubhodeep Bhowmick>Right. Or what we do is we divide the vector in two subspaces, in this case here we have divided it into four subspaces. So these are also known as sub vectors, which is your. You know the 122.</v>
+
+00:11:01.320 --> 00:11:07.750
+<v Shubhodeep Bhowmick>You. Ohh but just quite simple. So high dimensional vector is split into multiple summits.</v>
+
+00:11:08.720 --> 00:11:10.190
+<v Shubhodeep Bhowmick>Then step tools.</v>
+
+00:11:11.840 --> 00:11:19.890
+<v Shubhodeep Bhowmick>Now there is all this particular case. Suppose for with respect to 128 dimensional vector. This will be of 42.</v>
+
+00:11:20.370 --> 00:11:33.100
+<v Shubhodeep Bhowmick>Ohh 32 dimensional something right? So the number of values that it can take a are almost infinite. So basically the 32 dimensional vector. If you think about it.</v>
+
+00:11:33.380 --> 00:11:37.960
+<v Shubhodeep Bhowmick>Ohh is something that is 32 dimensional space that can take any band.</v>
+
+00:11:38.610 --> 00:11:48.440
+<v Shubhodeep Bhowmick>Ohh so something like here. If you see this is a 3D space and a vector that goes into this can be anything from here the entire space.</v>
+
+00:11:49.770 --> 00:11:54.780
+<v Shubhodeep Bhowmick>Right. But what we do the other than using this entire spaces?</v>
+
+00:11:55.180 --> 00:12:18.420
+<v Shubhodeep Bhowmick>Ohh we try to reduce the scope of values that this sub vector can take by that. What I mean is so suppose instead of having giving the liberty of the sub vector to be anything from this we just tell it choose a nearest and do it. So these are the centroids cetera chosen for every subvector and we say that if there is this particular vector here.</v>
+
+00:12:19.160 --> 00:12:22.160
+<v Shubhodeep Bhowmick>Then assign it to the closest central.</v>
+
+00:12:22.960 --> 00:12:34.550
+<v Shubhodeep Bhowmick>So now ohh though the values that are going to be there in a subspace are not going to be infinite, that is anything in this particular box, but only these, perhaps 8 vectors that are chosen by.</v>
+
+00:12:36.320 --> 00:12:36.890
+<v Shubhodeep Bhowmick>With me.</v>
+
+00:12:38.430 --> 00:13:08.990
+<v Shubhodeep Bhowmick>So basically what we choose is we have something known as predefined randomized for simplicity randomized centroids tools and for every subspace and in every sub vector is assigned to closest centroid in that subset subspace. So even if we have like let's say a million of subvectors here, in that case we will assign each one of those million subvectors to one of these centroids which are basically randomly decided and we'll do it for all the subnet.</v>
+
+00:13:09.160 --> 00:13:18.170
+<v Shubhodeep Bhowmick>So basically, you know it's C1C2C3 and this number of centroids, it's it would be similar to what we have in that IVF, right, how many?</v>
+
+00:13:19.310 --> 00:13:35.660
+<v Shubhodeep Bhowmick>Very, very similar inclusion, huh? Yeah, got it. OK. It's just that we have sub dividing the vector entire vector into sub sub vectors and then every sub vector has one representational send mode. So this entire step can be visualized with this.</v>
+
+00:13:37.310 --> 00:13:42.600
+<v Shubhodeep Bhowmick>Count of this androids, how they decided. But I'm again hyperparameter.</v>
+
+00:13:45.160 --> 00:13:51.130
+<v Shubhodeep Bhowmick>Got it right. So they divided it into a sub sub vectors and we have chosen.</v>
+
+00:13:51.470 --> 00:13:52.200
+<v Shubhodeep Bhowmick>Ohh.</v>
+
+00:13:54.170 --> 00:14:07.420
+<v Shubhodeep Bhowmick>Yeah. So we have divided those sub vectors and assign every sub vector to the nearest center. Hmm. Alright, so how does that reduce our time or?</v>
+
+00:14:08.440 --> 00:14:19.520
+<v Shubhodeep Bhowmick>How does that make the memory footprint lower? So if you see ohh here, I'll just take an example and maybe show it. Or do we have sketch?</v>
+
+00:14:20.630 --> 00:14:22.030
+<v Shubhodeep Bhowmick>Green colors spent Shaik.</v>
+
+00:14:29.790 --> 00:14:33.690
+<v Shubhodeep Bhowmick>That green Skype must be there somewhere that it was open last.</v>
+
+00:14:35.330 --> 00:14:38.100
+<v Shubhodeep Bhowmick>So should we do you can turn on your camera.</v>
+
+00:14:39.280 --> 00:14:39.830
+<v Shubhodeep Bhowmick>Project.</v>
+
+00:14:42.770 --> 00:14:45.160
+<v Shubhodeep Bhowmick>Ohh and then I'll talk about four.</v>
+
+00:14:48.280 --> 00:14:48.790
+<v Shubhodeep Bhowmick>No, no, no.</v>
+
+00:14:54.350 --> 00:14:56.110
+<v Shubhodeep Bhowmick>There's only one which is OK.</v>
+
+00:14:57.770 --> 00:15:00.540
+<v Shubhodeep Bhowmick>I was hoping we'd have color-coded.</v>
+
+00:15:03.360 --> 00:15:03.720
+<v Shubhodeep Bhowmick>Alright.</v>
+
+00:15:05.500 --> 00:15:12.340
+<v Shubhodeep Bhowmick>So Coldbrook is basically we have the vector or centroid C1C2C3C4.</v>
+
+00:15:14.040 --> 00:15:17.280
+<v Shubhodeep Bhowmick>That's this yet and we have an ID associated to it.</v>
+
+00:15:17.460 --> 00:15:19.410
+<v Shubhodeep Bhowmick>So they have this code book.</v>
+
+00:15:21.140 --> 00:15:22.570
+<v Shubhodeep Bhowmick>Ohk OK.</v>
+
+00:15:24.110 --> 00:15:24.340
+<v Shubhodeep Bhowmick>OK.</v>
+
+00:15:26.110 --> 00:15:26.620
+<v Shubhodeep Bhowmick>She's.</v>
+
+00:15:29.360 --> 00:15:40.350
+<v Shubhodeep Bhowmick>I should have started from index 0, but so this is the code book which assigns every centroid. It's basically a way of mapping and share your screen.</v>
+
+00:15:40.420 --> 00:15:41.380
+<v Shubhodeep Bhowmick>You look better now.</v>
+
+00:15:47.750 --> 00:15:48.320
+<v Shubhodeep Bhowmick>So.</v>
+
+00:15:48.490 --> 00:15:49.150
+<v Shubhodeep Bhowmick>We just.</v>
+
+00:15:52.490 --> 00:15:58.140
+<v Shubhodeep Bhowmick>So codebook is basically a mapping of every centroid that we have chosen to an ID.</v>
+
+00:15:58.850 --> 00:16:05.750
+<v Shubhodeep Bhowmick>So let's just actually, it's OK. I think I do. Also I can just have an assigned number 2001.</v>
+
+00:16:07.110 --> 00:16:11.210
+<v Shubhodeep Bhowmick>Yeah, actually it can be just an interior also so.</v>
+
+00:16:12.060 --> 00:16:14.950
+<v Shubhodeep Bhowmick>Right. So we have the entire.</v>
+
+00:16:15.670 --> 00:16:17.400
+<v Shubhodeep Bhowmick>That door P1.</v>
+
+00:16:18.410 --> 00:16:30.110
+<v Shubhodeep Bhowmick>We have divided into subspaces and now suppose this is our sub vector that is getting assigned to the one centroid which is 3.</v>
+
+00:16:30.840 --> 00:16:33.800
+<v Shubhodeep Bhowmick>Then this sub vector gets, let's say assigned to.</v>
+
+00:16:34.690 --> 00:16:37.770
+<v Shubhodeep Bhowmick>#5 this gets assigned to let's say 16.</v>
+
+00:16:38.470 --> 00:16:45.810
+<v Shubhodeep Bhowmick>This gets assigned to let's say 30, right? So this is our representation of the entire vector.</v>
+
+00:16:46.900 --> 00:16:51.840
+<v Shubhodeep Bhowmick>How does it increase the server? Like improve the search timers. Now we will have.</v>
+
+00:16:52.650 --> 00:16:54.580
+<v Shubhodeep Bhowmick>Such millions of vectors.</v>
+
+00:16:55.610 --> 00:16:58.120
+<v Shubhodeep Bhowmick>And we have such footprint for every one of.</v>
+
+00:17:01.090 --> 00:17:21.790
+<v Shubhodeep Bhowmick>This should be 32. I have one question like the the the soft vectors that we have created out of that vector so it can. It might happen that let's say first of vector of bigger vector can be same with let's say unit vector of like the 3rd or 4th of vector of another vector. It might be similar rate.</v>
+
+00:17:22.970 --> 00:17:44.680
+<v Shubhodeep Bhowmick>To understand this like, let's say, uh, let's just see one is a subject right for vector one and for another vector, let's say vector XYZ. So let's say third or fourth subjects or two can be seen of different no it's not 30. Can you write 5? No. So yeah, that's what he's he went right.</v>
+
+00:17:46.270 --> 00:17:48.790
+<v Shubhodeep Bhowmick>Ohh So what we will do is.</v>
+
+00:17:49.720 --> 00:18:19.590
+<v Shubhodeep Bhowmick>He or when I'm trying to assign right, imagine it to be a 3D space where I have chosen these sub vectors. So these are 123. First three are assigned for the subspace he or you will have let's say 456. This is assigned four totally exclusive mutually exclusive. That is what biggest these are centroids, right? This section, this space and this space doesn't have actually an intersection that they can be seen because this is another space. This is another space is another space dimension one. Yeah.</v>
+
+00:18:19.660 --> 00:18:42.140
+<v Shubhodeep Bhowmick>Got it. So we are digging it out into smaller worlds in itself, right, and we'll have a. So this can't be double this or this can't be 20 or something. Ohh, I mean have such print for each of the vectors. Now if you think about it, the entire vector for memory usage, suppose it was 128 dimension.</v>
+
+00:18:42.860 --> 00:18:50.310
+<v Shubhodeep Bhowmick>And each was stored with let's say 32 bits, which is 4 by it. In that case it will come down to.</v>
+
+00:18:51.390 --> 00:18:52.570
+<v Shubhodeep Bhowmick>Ohh so number.</v>
+
+00:18:54.160 --> 00:18:59.430
+<v Shubhodeep Bhowmick>7 + 2 to 5 seven plus 22222080.</v>
+
+00:19:00.680 --> 00:19:02.710
+<v Shubhodeep Bhowmick>I'm sorry. 40th 40.</v>
+
+00:19:05.230 --> 00:19:14.840
+<v Shubhodeep Bhowmick>Hey Cortana byte, so this is the overall memory requirement where I'm actually storing the compressed ones. It can be just these 4 numbers.</v>
+
+00:19:18.220 --> 00:19:18.790
+<v Shubhodeep Bhowmick>That is.</v>
+
+00:19:21.220 --> 00:19:22.060
+<v Shubhodeep Bhowmick>What do you need?</v>
+
+00:19:23.250 --> 00:19:29.500
+<v Shubhodeep Bhowmick>So that is how it reduces the memory footprint when we are calculating. How do we optimize the search?</v>
+
+00:19:30.970 --> 00:19:32.980
+<v Shubhodeep Bhowmick>So suppose this is my query Q.</v>
+
+00:19:36.140 --> 00:19:38.050
+<v Shubhodeep Bhowmick>Hot. So suppose there is this query Q.</v>
+
+00:19:39.910 --> 00:19:43.230
+<v Shubhodeep Bhowmick>I think codebook is something which is useless, we can remember.</v>
+
+00:19:52.210 --> 00:20:01.310
+<v Shubhodeep Bhowmick>So if we have a query vector and we have this entire database where we have these vectors too. So first what we do is we break it into subspaces.</v>
+
+00:20:02.150 --> 00:20:03.330
+<v Shubhodeep Bhowmick>Four subspaces.</v>
+
+00:20:04.850 --> 00:20:15.110
+<v Shubhodeep Bhowmick>And what we try to do is this is 3 numbers. Ohh ID number 3. So what is the centroid for that? So we'll have that.</v>
+
+00:20:15.870 --> 00:20:20.940
+<v Shubhodeep Bhowmick>For five, we'll have that as in the entire vector itself.</v>
+
+00:20:22.050 --> 00:20:32.970
+<v Shubhodeep Bhowmick>The expanded vector will have it for this, and we'll have it for the number 32 as well. So from codebook we will do reverse mapping to see what is the vector associated to these numbers.</v>
+
+00:20:36.460 --> 00:20:37.930
+<v Shubhodeep Bhowmick>We will perform or so.</v>
+
+00:20:39.150 --> 00:20:40.980
+<v Shubhodeep Bhowmick>Distance calculation between these.</v>
+
+00:20:41.820 --> 00:20:51.560
+<v Shubhodeep Bhowmick>And we will get the final result. So we will of course add these distances. We'll do it for all the ones that are there here and we'll get the closest one by sorting them.</v>
+
+00:20:52.660 --> 00:21:01.270
+<v Shubhodeep Bhowmick>With me. So basically like we are trying to reduce the memory, but computationally there's still no, no there is a need trek used but with me here.</v>
+
+00:21:04.130 --> 00:21:17.120
+<v Shubhodeep Bhowmick>Even I had that doubt that how is it computationally less expensive because I have to do this computation for all the vendors. Yeah. So anyway I'll have to do for everything but that we're really computing.</v>
