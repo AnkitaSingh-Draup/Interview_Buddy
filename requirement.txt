@@ -1,3 +1,7 @@
 Django==3.2.0
 djangorestframework==3.12.2
 nltk
+torch
+transformers
+vaderSentiment
+scikit-learn

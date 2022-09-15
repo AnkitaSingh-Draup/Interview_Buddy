@@ -1,16 +1,15 @@
 import nltk
-
 import re
 import pickle
 
-model_filename = 'model/query_classifier.pickle'
-vec_filename = 'model/query_vectorizer.pickle'
+model_filename = 'hackathon/ml_utils/model/query_classifier.pickle'
+vec_filename = 'hackathon/ml_utils/model/query_vectorizer.pickle'
 
 gb = pickle.load(open(model_filename, 'rb'))
 vectorizer = pickle.load(open(vec_filename, 'rb'))
 
 
-def get_questions(text, threshold = 0.75):
+def get_questions(text, threshold=0.75):
     sent_text = nltk.sent_tokenize(text)
     last_index = -1
     questions = []
@@ -39,41 +38,37 @@ regex_all = r"""
 regex_time = r"(^[0-9]{2})[:]([0-9]{2})[:]([0-9]{2})"
 
 
-interviewer_name = "Shubhodeep Bhowmick"
+def process_transcript(text, interviewer_name):
 
-with open('Transcript_5e9e8636-c21a-4b65-a83a-495385c63915.vtt') as f:
-    vtt_file = f.read()
+    interviewer_name = "Shubhodeep Bhowmick"
+    matches = re.finditer(regex_all, text, re.VERBOSE | re.DOTALL | re.MULTILINE)
 
-matches = re.finditer(regex, vtt_file, re.VERBOSE | re.DOTALL | re.MULTILINE)
+    conversation = []
+    continual_conv = ''
+    candidate_text = ''
+    interviewer_text = ''
+    questions_list = list()
 
-conversation = []
-continual_conv = ''
-
-
-for matchNum, match in enumerate(matches, start=1):    
-    if matchNum < 1000000:
+    for matchNum, match in enumerate(matches, start=1):
         start, end, name, text = [match.group(group_num) for group_num in range(1,5)]
-#         s_hr, s_min, s_sec = [next(re.finditer(regex_time, start, re.VERBOSE | re.DOTALL | re.MULTILINE)).group(group_num) for group_num in range(1,4)]
-#         e_hr, e_min, e_sec = [next(re.finditer(regex_time, end, re.VERBOSE | re.DOTALL | re.MULTILINE)).group(group_num) for group_num in range(1,4)]
-        
         if matchNum == 1:
             previous_name = name
-        
+
         if name == previous_name:
             continual_conv += text
         else:
             if previous_name == interviewer_name:
                 questions = get_questions(continual_conv, 0.6)
+                questions_list.extend(questions)
+                interviewer_text += continual_conv
                 conversation.append({'name': previous_name,
-                                         'text': continual_conv,
-                                         'questions': questions})
+                                     'text': continual_conv,
+                                     'questions': questions})
             else:
                 conversation.append({'name': previous_name,
                                      'text': continual_conv})
-
-#             sent_text = nltk.sent_tokenize(continual_conv)
-#             [print(i,':', sent) for i, sent in enumerate(sent_text) if gb.predict_proba(vectorizer.transform([sent]))[0][1] > 0.6]
-#             print()
-            
+                candidate_text += continual_conv
             previous_name = name
             continual_conv = text
+
+    return questions_list, interviewer_text, candidate_text

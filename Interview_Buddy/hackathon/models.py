@@ -13,6 +13,7 @@ class Job(models.Model):
     soft_skills = models.TextField()
     company_name = models.CharField(max_length=200, null=True, blank=True)
     posted_date = models.DateField(null=True, blank=True)
+    role = models.TextField(null=True, blank=True)
 
 
 class Question(models.Model):
@@ -29,7 +30,7 @@ class Transcript(models.Model):
 
 
 class Interviewer(models.Model):
-    emp_id = models.IntegerField(null=False, blank=False, unique=True)
+    email = models.TextField(null=True, blank=True, unique=True)
     name = models.TextField(null=False, blank=False)
     max_level = models.TextField(null=False, blank=False)
 
@@ -48,20 +49,10 @@ class Candidate(models.Model):
     past_company = models.TextField(null=True, blank=True)
     years_of_exp = models.TextField(null=True, blank=True, default=0)
     past_title = models.TextField(null=True, blank=True)
+    past_role = models.TextField(null=True, blank=True)
 
     class Meta:
         unique_together = ('name', 'email')
-
-
-class QuestionLevelRating(models.Model):
-    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, null=False, blank=False)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, null=False, blank=False)
-    level = models.ForeignKey(Level, on_delete=models.CASCADE, null=False, blank=False)
-    rating = models.ForeignKey(Rating, on_delete=models.CASCADE, null=False, blank=False)
-    interviewer = models.ForeignKey(Interviewer, on_delete=models.CASCADE, null=True, blank=True)
-
-    class Meta:
-        unique_together = ('candidate', 'question', 'level', 'rating')
 
 
 class Interview(models.Model):
@@ -69,18 +60,37 @@ class Interview(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, null=False, blank=False)
     interviewer = models.ForeignKey(Interviewer, on_delete=models.CASCADE, null=False, blank=False)
     level = models.ForeignKey(Level, on_delete=models.CASCADE, null=False, blank=False)
-    result = models.TextField(null=False, blank=False)
-    overall_rating = models.IntegerField(null=True, blank=True)
     grammar_rating = models.IntegerField(null=True, blank=True)
     interviewer_sentiment = models.TextField(null=True, blank=True)
+    candidate_sentiment = models.TextField(null=True, blank=True)
+    transcript = models.ForeignKey(Transcript, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        unique_together = ('candidate', 'job', 'interviewer', 'level', 'result')
+        unique_together = ('candidate', 'job', 'level')
+
+
+class QuestionLevelRating(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, null=False, blank=False)
+    rating = models.ForeignKey(Rating, on_delete=models.CASCADE, null=False, blank=False)
+    interview = models.ForeignKey(Interview, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('question', 'interview')
 
 
 class JobCandidateMapping(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    similarity = models.FloatField(null=True, blank=True)
 
     class Meta:
         unique_together = ('job_id', 'candidate')
+
+
+class RoadMap(models.Model):
+    role = models.ForeignKey(Job, on_delete=models.CASCADE)
+    level = models.ForeignKey(Level, on_delete=models.CASCADE)
+    topics = models.TextField(null=False, blank=False)
+
+    class Meta:
+        unique_together = ('role', 'level')

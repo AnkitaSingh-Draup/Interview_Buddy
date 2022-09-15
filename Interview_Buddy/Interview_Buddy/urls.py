@@ -24,4 +24,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('get_job_role/', get_job_role),
     path('get_candidate_details/', get_candidate_details),
+    path('get_candidate_interview_details/', get_candidate_interview_details),
+    path('get_transcript_questions/', get_transcript_questions),
+    path('save_questions/', save_questions),
+    path('get_roadmap_data/', get_roadmap_data)
+
 ]
