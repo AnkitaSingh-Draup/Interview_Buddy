@@ -23,5 +23,4 @@ router = DefaultRouter()
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('get_job_skill_role/', get_job_skill_role),
-    path('get_candidate_profile/', get_candidate_profile),
 ]

@@ -45,9 +45,9 @@ class Candidate(models.Model):
     address = models.CharField(max_length=200, null=False, blank=False)
     core_skills = models.TextField()
     soft_skills = models.TextField()
-    past_company = models.TextField()
-    years_of_exp = models.TextField(default=0)
-    past_title = models.TextField()
+    past_company = models.TextField(null=True, blank=True)
+    years_of_exp = models.TextField(null=True, blank=True, default=0)
+    past_title = models.TextField(null=True, blank=True)
 
     class Meta:
         unique_together = ('name', 'email')
@@ -58,6 +58,7 @@ class QuestionLevelRating(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, null=False, blank=False)
     level = models.ForeignKey(Level, on_delete=models.CASCADE, null=False, blank=False)
     rating = models.ForeignKey(Rating, on_delete=models.CASCADE, null=False, blank=False)
+    interviewer = models.ForeignKey(Interviewer, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         unique_together = ('candidate', 'question', 'level', 'rating')
@@ -69,6 +70,17 @@ class Interview(models.Model):
     interviewer = models.ForeignKey(Interviewer, on_delete=models.CASCADE, null=False, blank=False)
     level = models.ForeignKey(Level, on_delete=models.CASCADE, null=False, blank=False)
     result = models.TextField(null=False, blank=False)
+    overall_rating = models.IntegerField(null=True, blank=True)
+    grammar_rating = models.IntegerField(null=True, blank=True)
+    interviewer_sentiment = models.TextField(null=True, blank=True)
 
     class Meta:
         unique_together = ('candidate', 'job', 'interviewer', 'level', 'result')
+
+
+class JobCandidateMapping(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('job_id', 'candidate')

@@ -11,7 +11,13 @@ def get_job_skill_role(request):
     response = {'status': 'success', 'result': {}, 'errors': []}
     try:
         if request.method == 'GET':
-            data = Job.objects.filter().values()
+            data_list = JobCandidateMapping.objects.filter().values()
+            for data in data_list:
+                job_id = data.get('job_id')
+                if not response['result'].get(job_id):
+                    job_data = Job.objects.filter(id=job_id).values
+                    response['result'][job_id]
+
 
             response['result'] = data
     except Exception as e:
@@ -19,17 +25,3 @@ def get_job_skill_role(request):
         response['status'] = 'fail'
     return Response(response)
 
-
-@api_view(['GET'])
-@permission_classes((AllowAny,))
-def get_candidate_profile(request):
-    response = {'status': 'success', 'result': {}, 'errors': []}
-    try:
-        if request.method == 'GET':
-            data = Candidate.objects.filter().values()
-
-            response['result'] = data
-    except Exception as e:
-        response['errors'] = e
-        response['status'] = 'fail'
-    return Response(response)
