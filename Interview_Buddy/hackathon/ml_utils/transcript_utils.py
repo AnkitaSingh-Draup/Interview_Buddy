@@ -1,6 +1,13 @@
 import nltk
 
 import re
+import pickle
+
+model_filename = 'model/query_classifier.pickle'
+vec_filename = 'model/query_vectorizer.pickle'
+
+gb = pickle.load(open(model_filename, 'rb'))
+vectorizer = pickle.load(open(vec_filename, 'rb'))
 
 
 def get_questions(text, threshold = 0.75):
