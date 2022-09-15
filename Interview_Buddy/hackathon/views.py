@@ -7,19 +7,60 @@ from .ml_utils.transcript_utils import *
 from .ml_utils.model_utils import *
 # Create your views here.
 
+import json
+
+job_role_data = json.load(open('hackathon/ml_utils/model/job_role.json', 'r+'))
+
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
 def get_candidate_details(request):
-    response = {'status': 'success', 'result': {}, 'errors': []}
+    response = {'status': 'success', 'result': [], 'errors': []}
     try:
         if request.method == 'POST':
             data = json.loads(request.body)
-            data_list = JobCandidateMapping.objects.filter(job__job_id=data.get('job_id')).values()
+            data_list = JobCandidateMapping.objects.filter(job__job_id=data.get('job_id'))
             for data in data_list:
-                candidate_id = data.get('candidate_id')
+                candidate_core_skills = data.candidate.core_skills
+                candidate_soft_skills = data.candidate.soft_skills
+                past_title_candidate = data.candidate.past_title
+                past_role_candidate = data.candidate.past_role
+
+                job_core_skills = data.job.core_skills
+                past_title_job = data.job.title
+                past_role_job = data.job.role
+                job_soft_skills = data.job.soft_skills
+
+                core_skill_match = len(set(job_core_skills).intersection(set(candidate_core_skills))) / len(
+                    set(job_core_skills).union(set(candidate_core_skills)))
+                soft_skill_match = len(set(job_soft_skills).intersection(set(candidate_soft_skills))) / len(
+                    set(job_soft_skills).union(set(candidate_soft_skills)))
+
+                global job_role_data
+                if not job_role_data:
+                    job_role_data = json.load(open('hackathon/ml_utils/model/job_role.json', 'r+'))
+                if past_title_candidate == past_title_job:
+                    role_match = 1.0
+                if past_role_candidate == past_role_job:
+                    role_match = 0.8
+                elif job_role_data[past_role_candidate]['job_family'] == job_role_data[past_role_job]['job_family']:
+                    role_match = 0.5
+                elif job_role_data[past_role_candidate]['job_occupation'] == job_role_data[past_role_job]['job_occupation']:
+                    role_match = 0.3
+                else:
+                    role_match = 0.0
+                sim_weightage = {'core': 0.4,
+                                 'soft': 0.1,
+                                 'role': 0.5}
+                final_match_score = core_skill_match * sim_weightage['core'] + soft_skill_match * sim_weightage[
+                    'soft'] + soft_skill_match * sim_weightage['role']
+
+                common_skills = set(job_core_skills).intersection(set(candidate_core_skills))
+
+                candidate_id = data.candidate.id
                 candidate = list(Candidate.objects.filter(id=candidate_id).values())
-                response['result'] = candidate
+                response['result'].append(
+                    {'candidate': candidate, 'final_match_score': final_match_score})
 
     except Exception as e:
         response['errors'] = e
