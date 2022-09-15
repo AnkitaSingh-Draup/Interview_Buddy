@@ -11,6 +11,8 @@ class Job(models.Model):
     title = models.TextField(null=False, blank=False)
     core_skills = models.TextField()
     soft_skills = models.TextField()
+    company_name = models.CharField(max_length=200, null=True, blank=True)
+    posted_date = models.DateField(null=True, blank=True)
 
 
 class Question(models.Model):
