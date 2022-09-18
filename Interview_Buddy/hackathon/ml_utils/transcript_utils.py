@@ -1,3 +1,5 @@
+import random
+
 import nltk
 import re
 import pickle
@@ -29,14 +31,16 @@ def get_questions(text, threshold=0.75):
     return questions
 
 
-def process_transcript(transcript_text, interviewer_name):
+def process_transcript(interviewer_name):
+    data_list = [('1.vtt', 'Sushant Gundla')]
+    file_name, interviewer_name = random.choice(data_list)
     regex_all = r"""
 (^[0-9]{2}[:][0-9]{2}[:][0-9]{2}[.,][0-9]{3})
 [ ]-->[ ]
 ([0-9]{2}[:][0-9]{2}[:][0-9]{2}[.,][0-9]{3})
 (?:\n<v\s)(.*?)(?:>)(.*?)(?:</v>)(?:\n\n|\Z)"""
 
-    with open('hackathon/ml_utils/1.vtt') as f:
+    with open(f'hackathon/ml_utils/{file_name}') as f:
         transcript_text = f.read()
 
     matches = re.finditer(regex_all, transcript_text, re.VERBOSE | re.DOTALL | re.MULTILINE)

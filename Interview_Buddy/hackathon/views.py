@@ -132,9 +132,8 @@ def get_transcript_questions(request):
     try:
         if request.method == 'POST':
             data = json.loads(request.body)
-            obj = Transcript.objects.filter(id=1).first()
-            interviewer_name = data.get('interviewer_name')
-            questions_list, interviewer_text, candidate_text = process_transcript(obj.vtt_file, interviewer_name)
+            interviewer_name = data.get('interviewer_name', None)
+            questions_list, interviewer_text, candidate_text = process_transcript(interviewer_name)
             grammar_rating = get_grammar_rating(candidate_text)
             interviewer_sentiment_score = sentiment_scores(interviewer_text)
             candidate_sentiment_score = sentiment_scores(candidate_text)
