@@ -92,7 +92,7 @@ def get_candidate_interview_details(request):
             data = json.loads(request.body)
             candidate_id = data.get('candidate_id')
             job_id = data.get('job_id')
-            interview_data = Interview.objects.filter(candidate_id=candidate_id, job_id=job_id)
+            interview_data = Interview.objects.filter(candidate_id=candidate_id, job__job_id=job_id)
             if interview_data:
                 for row in interview_data:
                     level = row.level.name
