@@ -108,6 +108,15 @@ def get_candidate_interview_details(request):
             interview_data = Interview.objects.filter(candidate_id=candidate_id, job__job_id=job_id)
             if interview_data:
                 for row in interview_data:
+                    grammar_rating = row.grammar_rating
+                    interviewer_sentiment = row.interviewer_sentiment
+                    candidate_sentiment = row.candidate_sentiment
+                    if grammar_rating is not None:
+                        response['result']['grammar_rating'] = grammar_rating
+                    if interviewer_sentiment is not None:
+                        response['result']['interviewer_sentiment'] = interviewer_sentiment
+                    if candidate_sentiment is not None:
+                        response['result']['candidate_sentiment'] = candidate_sentiment
                     level = row.level.name
                     question_rating = QuestionLevelRating.objects.filter(interview_id=row.id)
                     if question_rating:
