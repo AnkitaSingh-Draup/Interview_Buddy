@@ -59,8 +59,21 @@ def get_candidate_details(request):
 
                 candidate_id = data.candidate.id
                 candidate = list(Candidate.objects.filter(id=candidate_id).values())
-                response['result'].append(
-                    {'candidate': candidate, 'final_match_score': final_match_score})
+                rating = QuestionLevelRating.objects.filter(interview__candidate=candidate[0]['id'])
+                level_dict = {}
+                for row in rating:
+                    level = row.interview.level.name
+                    rating = row.rating.id
+                    if not level_dict.get(level):
+                        level_dict[level] = rating
+                    else:
+                        level_dict[level] += rating/2
+                score = 0
+                if level_dict:
+                    score = sum(level_dict.values()) / len(level_dict)
+                resp = {'candidate': candidate, 'final_match_score': final_match_score, 'total_score': score}
+                resp.update(level_dict)
+                response['result'].append(resp)
 
     except Exception as e:
         response['errors'] = e
